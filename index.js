@@ -1,10 +1,11 @@
-import x from "express";
-import {fileURLToPath} from "url";
+const express = require('express');
+//import {fileURLToPath} from "url";
+const bodyParser = require('body-parser');
 
 const CORS = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET,POST,DELETE",
-    "Access-Control-Allow-Headers": "Access-Control-Allow-Headers"
+    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+    "Access-Control-Allow-Headers": "x-test,Content-Type,Accept,Access-Control-Allow-Headers"
 };
 const setContentTypeJson = {
     "Content-Type": "application/json; charset=utf-8"
@@ -15,11 +16,14 @@ const setContentTypeText = {
 const setContentTypeHTML = {
     "Content-type": "text/html; charset=UTF-8"
 };
-const app = x();
+const app = express();
 
 app
+.use(bodyParser.text())
 .use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'x-test, Content-Type, Accept, Access-Control-Allow-Headers');
     next();
   })
 .get("/", (req, res) => {
@@ -58,11 +62,25 @@ app
     .send(taskCode);
 })
 .get("/fetch/", (req, res) => {
-    const __filename = fileURLToPath(import.meta.url).replace("index.js", "task3.html");
+    //const __filename = fileURLToPath(import.meta.url).replace("index.js", "task3.html");
     res
     .set(setContentTypeHTML)
     .sendFile(__filename);
 })
+//Task4
+.post("/result4/", (req, res) => {
+    const x_res = req.header('x-test')
+    const jsonRes = {
+        "message": "itmo370137",
+        "x-result": req.header('x-test'),
+        "x-body": req.body
+    };
+    res
+    .set(setContentTypeJson)
+    .set(CORS)
+    .json(jsonRes);
+})
+
 .listen(3000, () => {
     console.log('Сервер запущен на порту 3000');
 });
